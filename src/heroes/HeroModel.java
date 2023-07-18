@@ -24,7 +24,7 @@ public class HeroModel extends AbstractModel {
 
     // Setter, getter, dan metode lainnya
 
-   @Override
+    @Override
 public void create() {
     String query = "INSERT INTO hero (hero_id, hero_rank, hero_name) VALUES (?, ?, ?)";
 

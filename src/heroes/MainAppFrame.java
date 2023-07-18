@@ -102,6 +102,11 @@ public class MainAppFrame extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        HeroTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                HeroTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(HeroTable);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -196,38 +201,37 @@ public class MainAppFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_Btn_TambahActionPerformed
 
     private void Btn_EditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_EditActionPerformed
-     int selectedRow = HeroTable.getSelectedRow();
+     String heroId = hero_id_tf.getText();
+    String heroRank = hero_rank_tf.getText();
+    String heroName = hero_name_tf.getText();
 
-    if (selectedRow != -1) {
-        String heroId = HeroTable.getValueAt(selectedRow, 0) != null ? HeroTable.getValueAt(selectedRow, 0).toString() : "";
-        String heroRankText = hero_rank_tf.getText();
-        String heroName = HeroTable.getValueAt(selectedRow, 2) != null ? HeroTable.getValueAt(selectedRow, 2).toString() : "";
-
-        // Validate and convert the heroRank value
-        int heroRank = 0; // Default value if the field is empty or not valid
-        if (!heroRankText.isEmpty()) {
-            try {
-                heroRank = Integer.parseInt(heroRankText);
-            } catch (NumberFormatException e) {
-                // Handle the case where heroRank cannot be parsed as an integer
-                e.printStackTrace();
-            }
-        }
-
-        // Update the selected row in the HeroTable
-        HeroTable.setValueAt(heroRank, selectedRow, 1); // Assuming heroRank is in the second column
-        HeroTable.setValueAt(heroName, selectedRow, 2); // Assuming heroName is in the third column
-
-        // Create a new instance of HeroModel with the updated values
-        HeroModel hero = new HeroModel(heroId, heroRank, heroName);
-
-        // Call the update method to save the changes to the database
-        hero.update();
-
-        // Display a success message
-        JOptionPane.showMessageDialog(this, "Data hero berhasil diperbarui");
-        tampilkan();
+    // Validate the input values
+    if (heroId.isEmpty() || heroRank.isEmpty() || heroName.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Harap lengkapi semua data");
+        return;
     }
+
+    // Create a new instance of HeroModel with the updated values
+    HeroModel hero = new HeroModel(heroId, Integer.parseInt(heroRank), heroName);
+
+    // Call the update method to save the changes to the database
+    hero.update();
+
+    // Display a success message
+    JOptionPane.showMessageDialog(this, "Data hero berhasil diperbarui");
+
+    // Enable the "Tambah" button and disable the "Update" and "Hapus" buttons
+    Btn_Tambah.setEnabled(true);
+    Btn_Edit.setEnabled(false);
+    Btn_Hapus.setEnabled(false);
+
+    // Clear the text fields
+    hero_id_tf.setText("");
+    hero_rank_tf.setText("");
+    hero_name_tf.setText("");
+
+    // Refresh the table
+    tampilkan();
     }//GEN-LAST:event_Btn_EditActionPerformed
 
     private void Btn_HapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_HapusActionPerformed
@@ -250,6 +254,27 @@ public class MainAppFrame extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "Pilih baris terlebih dahulu.", "Peringatan", JOptionPane.WARNING_MESSAGE);
     }
     }//GEN-LAST:event_Btn_HapusActionPerformed
+
+    private void HeroTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_HeroTableMouseClicked
+        // TODO add your handling code here:
+        int selectedRow = HeroTable.getSelectedRow();
+
+    if (selectedRow != -1) {
+        String heroId = HeroTable.getValueAt(selectedRow, 0) != null ? HeroTable.getValueAt(selectedRow, 0).toString() : "";
+        String heroRank = HeroTable.getValueAt(selectedRow, 1) != null ? HeroTable.getValueAt(selectedRow, 1).toString() : "";
+        String heroName = HeroTable.getValueAt(selectedRow, 2) != null ? HeroTable.getValueAt(selectedRow, 2).toString() : "";
+
+        // Set the values to the corresponding text fields
+        hero_id_tf.setText(heroId);
+        hero_rank_tf.setText(heroRank);
+        hero_name_tf.setText(heroName);
+
+        // Disable the "Tambah" button and enable the "Update" and "Hapus" buttons
+        Btn_Tambah.setEnabled(false);
+        Btn_Edit.setEnabled(true);
+        Btn_Hapus.setEnabled(true);
+    }
+    }//GEN-LAST:event_HeroTableMouseClicked
   private void tampilkan() {
     int row = model.getRowCount();
     for (int a = 0; a < row; a++) {
